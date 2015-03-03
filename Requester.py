@@ -19,7 +19,6 @@ def is_defaced(page):
 class PageAnaliser():
     def __init__(self, save_criteria=is_defaced):
         self._save_criteria = save_criteria
-        self._results = dict()
 
     def analise(self, url, page):
         title_search = re.compile(TITLE_TAG_REGEXP).search(page)
@@ -42,13 +41,12 @@ class PageAnaliser():
             save = page
 
         out_tuple = (url, title, str_md5, str_sha1, save, str(datetime.datetime.now()))
-        self._results[url] = out_tuple
 
         return out_tuple
 
 
 class WebRequester():
-    def __init__(self, useragent=FIREFOX_AGENT, timeout=5, analiser=PageAnaliser()):
+    def __init__(self, useragent=FIREFOX_AGENT, timeout=1, analiser=PageAnaliser()):
         self._headers = {'UserAgent': useragent}
         self._timeout = timeout
         self._analiser = analiser

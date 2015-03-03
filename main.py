@@ -3,20 +3,24 @@ from concurrent.futures import ThreadPoolExecutor
 import itertools
 import IpGenerator
 import Requester
-import pickle
 
-IP_BLOCK_SIZE = 5000
-dumpName = 'dump.pickle'
+#TODO Refactor
+
+IP_BLOCK_SIZE = 50000
 outputName = 'result.txt'
 
-executor = ThreadPoolExecutor(max_workers=300)
+executor = ThreadPoolExecutor(max_workers=500)
+ips = IpGenerator.IpGenerator()
+requester = Requester.WebRequester()
+
 try:
-    ips, requester = pickle.load(open(dumpName, 'rb'))
-    print('Pickle file were loaded')
+    f = open(outputName, 'r')
+    for line in f:
+        ip = line.split(',', maxsplit=1)[0].strip("(\'http:\/\/")
+        ips._used.add(ip)
+    print('Last run IP were loaded')
 except:
-    print('Pickle file not found.')
-    ips = IpGenerator.IpGenerator()
-    requester = Requester.WebRequester()
+    print('Begining new scan.')
 
 output = open(outputName, 'a')
 while True:
@@ -27,6 +31,5 @@ while True:
                 output.write(str(response))
                 output.write('\n')
                 output.flush()
-                pickle.dump((ips, requester), open(dumpName, 'wb'))
         except Exception as e:
             print('ERROR: ' + str(e))
